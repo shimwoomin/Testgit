@@ -1,92 +1,53 @@
-﻿import java.io.Serializable;
+﻿package com.naver;
 
-public class MemberDTO implements Serializable {
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private String id;
-	private String name;
-	private String did;
-	private int age;
+public class MemberDAO {
 
-	public MemberDTO() {
-		// TODO Auto-generated constructor stub
+	public static final String DRIVER = "oracle.jdbc.driver.OracleDriver";
+	public static final String URL = "jdbc:oracle:thin:@localhost:1521:xe";
+	public static final String USER = "ca2";
+	public static final String PASSWORD = "ca2";
+
+	public MemberDAO() {
+		try {
+			Class.forName(DRIVER);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	public MemberDTO(String id, String name, String did, int age) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.did = did;
-		this.age = age;
-	}
+	public void insert(MemberDTO dto) {
 
-	public String getId() {
-		return id;
-	}
+		Connection conn = null;
+		PreparedStatement pt = null;
+		String sql = "insert into member2(id,name,age)values(?,?,?)";
 
-	public void setId(String id) {
-		this.id = id;
-	}
+		try {
+			conn = DriverManager.getConnection(URL,USER,PASSWORD);
+			pt = conn.prepareStatement(sql);
+			pt.setString(1, dto.getId());
+			pt.setString(2, dto.getName());
+			pt.setInt(3, dto.getAge());
+			pt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pt != null) {
+					pt.close();
+				}
+				if (conn != null) {
+					conn.close();
+				}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getDid() {
-		return did;
-	}
-
-	public void setDid(String did) {
-		this.did = did;
-	}
-
-	public int getAge() {
-		return age;
-	}
-
-	public void setAge(int age) {
-		this.age = age;
-	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		MemberDTO other = (MemberDTO) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		return true;
-	}
-
-	@Override
-	public String toString() {
-		return id + "\t" + name + "\t" + age + "\t" + did;
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
 	}
 
 }
